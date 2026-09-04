@@ -1,0 +1,6 @@
+{
+  "app": "ganjabzar",
+  "platform": "python",
+  "python": {"version": "3.11"},
+  "port": 5000
+}
