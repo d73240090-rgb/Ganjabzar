@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گنج ابزار</title>
+    <style>
+        body { font-family: Tahoma; background: #f5f5f5; margin: 0; padding: 20px; }
+        .header { background: #FF7A00; color: white; padding: 30px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .tool-card { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .price { color: #FF7A00; font-size: 1.3em; font-weight: bold; }
+        .btn { background: #FF7A00; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 گنج ابزار</h1>
+        <p>اجاره ابزار در البرز و تهران</p>
+    </div>
+    <div class="container">
+        <h2>ثبت آگهی جدید</h2>
+        <form id="hostForm">
+            <input type="tel" id="phone" placeholder="شماره موبایل" required>
+            <input type="text" id="toolName" placeholder="نام ابزار" required>
+            <input type="number" id="price" placeholder="قیمت روزانه (تومان)" required>
+            <input type="number" id="value" placeholder="ارزش ابزار (تومان)" value="0">
+            <select id="area">
+                <option value="">انتخاب منطقه</option>
+                <option value="البرز">البرز</option>
+                <option value="تهران">تهران</option>
+                <option value="چالوس">چالوس</option>
+                <option value="کرج">کرج</option>
+            </select>
+            <button type="submit" class="btn">ثبت آگهی</button>
+        </form>
+        <h2>ابزارهای موجود</h2>
+        <div id="toolsList"></div>
+    </div>
+    <script>
+        document.getElementById('hostForm').onsubmit = function(e) {
+            e.preventDefault();
+            fetch('/api/host', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    phone: document.getElementById('phone').value,
+                    name: document.getElementById('toolName').value,
+                    price: parseInt(document.getElementById('price').value),
+                    value: parseInt(document.getElementById('value').value),
+                    area: document.getElementById('area').value
+                })
+            }).then(r => r.json()).then(d => {
+                alert(d.message);
+                loadTools();
+            });
+        };
+        
+        function loadTools() {
+            fetch('/api/tools').then(r => r.json()).then(tools => {
+                document.getElementById('toolsList').innerHTML = tools.map(t => 
+                    `<div class="tool-card"><h3>${t.name}</h3><p>📍 ${t.area}</p><p class="price">${t.price.toLocaleString()} تومان/روز</p></div>`
+                ).join('');
+            });
+        }
+        
+        loadTools();
+    </script>
+</body>
+</html>
+templates/index.html
